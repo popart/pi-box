@@ -1,0 +1,5 @@
+# Agent's working area — will contain pulled-in git repos of its own,
+# not meant to be tracked/nested inside this repo. Ignore everything
+# except this file, so the directory itself still exists on clone.
+*
+!.gitignore

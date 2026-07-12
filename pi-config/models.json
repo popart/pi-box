@@ -1,0 +1,10 @@
+{
+  "providers": {
+    "anthropic": {
+      "baseUrl": "http://token-proxy:8080/anthropic"
+    },
+    "xai": {
+      "baseUrl": "http://token-proxy:8080/xai"
+    }
+  }
+}

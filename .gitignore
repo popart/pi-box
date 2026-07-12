@@ -1,0 +1,2 @@
+# Real secrets — never commit these
+.env

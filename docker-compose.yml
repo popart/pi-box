@@ -1,0 +1,57 @@
+services:
+  agent:
+    build: .
+    depends_on:
+      - token-proxy
+    volumes:
+      - ./workspace:/workspace
+      # Tells pi to route the anthropic/xai providers through token-proxy
+      # instead of hitting api.anthropic.com / api.x.ai directly.
+      - ./pi-config/models.json:/home/agent/.pi/agent/models.json:ro
+    working_dir: /workspace
+    environment:
+      # Placeholder tokens — the agent never sees the real ones. Pi still
+      # sends these as the Authorization/x-api-key header on requests (now
+      # routed to token-proxy per models.json above); token-proxy swaps in
+      # the real key before forwarding upstream.
+      - ANTHROPIC_API_KEY=placeholder-anthropic
+      - XAI_API_KEY=placeholder-xai
+      # Add one line per extra paid (non-LLM) service, e.g.:
+      # - ACME_API_KEY=placeholder-acme
+      # - ACME_BASE_URL=http://token-proxy:8080/acme
+      - HTTP_PROXY=http://token-proxy:8080
+      - HTTPS_PROXY=http://token-proxy:8080
+      - NO_PROXY=localhost,127.0.0.1
+    # --- resource limits so a runaway agent can't thrash the host ---
+    cpus: "2"
+    mem_limit: 4g
+    memswap_limit: 4g
+    pids_limit: 512
+    # --- filesystem hardening ---
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/agent/.cache
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - agentnet
+
+  token-proxy:
+    build: ./token-proxy
+    environment:
+      # Real secrets live only here, never in the agent container.
+      - REAL_ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - REAL_XAI_API_KEY=${XAI_API_KEY}
+      # Add one line per extra paid service:
+      # - REAL_ACME_API_KEY=${ACME_API_KEY}
+    mem_limit: 256m
+    cpus: "0.5"
+    networks:
+      - agentnet
+
+networks:
+  agentnet:
+    driver: bridge
