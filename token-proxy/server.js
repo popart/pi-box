@@ -12,8 +12,8 @@ const PROVIDERS = {
   anthropic: {
     host: "api.anthropic.com",
     envVar: "REAL_ANTHROPIC_API_KEY",
-    header: "x-api-key",
-    prefix: "",
+    header: "authorization",
+    prefix: "Bearer ",
   },
   xai: {
     host: "api.x.ai",

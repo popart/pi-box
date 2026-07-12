@@ -1,6 +1,9 @@
 services:
   agent:
     build: .
+    # Idle instead of running `pi` directly, so the container stays up and
+    # you can `docker exec -it pi-box-agent-1 bash` into it on demand.
+    entrypoint: ["sleep", "infinity"]
     depends_on:
       - token-proxy
     volumes:
@@ -8,6 +11,11 @@ services:
       # Tells pi to route the anthropic/xai providers through token-proxy
       # instead of hitting api.anthropic.com / api.x.ai directly.
       - ./pi-config/models.json:/home/agent/.pi/agent/models.json:ro
+      # Persist LLM session history across container restarts. Bind-mounted
+      # under ./workspace (not a separate Docker volume) so it's visible and
+      # inspectable, and covered by the same symlink-risk caveat in RISKS.md
+      # as everything else the agent writes.
+      - ./workspace/.pi-sessions:/home/agent/.pi/agent/sessions
     working_dir: /workspace
     environment:
       # Placeholder tokens — the agent never sees the real ones. Pi still
