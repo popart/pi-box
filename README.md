@@ -60,7 +60,20 @@ This does **not** protect against everything — see Limitations.
 
 3. Put whatever files/folders the agent needs to work on into `./workspace`.
 
-4. Build and run:
+4. (Recommended) Give pi a system prompt to make it work less independently. Pi
+   doesn't ask for confirmation before running commands or editing files the
+   way e.g. Claude Code does, so without one it'll act on anything it
+   decides to do, no questions asked:
+
+   ```
+   cp -R dot-pi-example workspace/.pi
+   ```
+
+   Edit `workspace/.pi/agent/SYSTEM.md` to taste — pi reads it from
+   `~/.pi/agent/SYSTEM.md`, which is why it needs to land under
+   `workspace/.pi` (bind-mounted to `/home/agent/.pi` in the container).
+
+5. Build and run:
 
    ```
    docker compose up --build

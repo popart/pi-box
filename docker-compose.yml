@@ -15,7 +15,7 @@ services:
       # under ./workspace (not a separate Docker volume) so it's visible and
       # inspectable, and covered by the same symlink-risk caveat in RISKS.md
       # as everything else the agent writes.
-      - ./workspace/.pi-sessions:/home/agent/.pi/agent/sessions
+      - ./workspace/.pi:/home/agent/.pi
     working_dir: /workspace
     environment:
       # Placeholder tokens — the agent never sees the real ones. Pi still
