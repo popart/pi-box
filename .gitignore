@@ -1,2 +1,5 @@
 # Real secrets — never commit these
 .env
+
+# container's ~/.pi persistence
+dot-pi

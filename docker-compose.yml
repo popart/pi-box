@@ -15,7 +15,7 @@ services:
       # under ./workspace (not a separate Docker volume) so it's visible and
       # inspectable, and covered by the same symlink-risk caveat in RISKS.md
       # as everything else the agent writes.
-      - ./workspace/.pi:/home/agent/.pi
+      - ./dot-pi:/home/agent/.pi
     working_dir: /workspace
     environment:
       # Placeholder tokens — the agent never sees the real ones. Pi still
@@ -55,6 +55,9 @@ services:
       - REAL_XAI_API_KEY=${XAI_API_KEY}
       # Add one line per extra paid service:
       # - REAL_ACME_API_KEY=${ACME_API_KEY}
+      # Logs outgoing request method/URL/headers (key redacted) + upstream
+      # status to stdout. Set PROXY_DEBUG=1 in .env to enable.
+      - PROXY_DEBUG=${PROXY_DEBUG:-}
     mem_limit: 256m
     cpus: "0.5"
     networks:

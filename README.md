@@ -66,7 +66,7 @@ This does **not** protect against everything — see Limitations.
    decides to do, no questions asked:
 
    ```
-   cp -R dot-pi-example workspace/.pi
+   cp -R dot-pi-example dot-pi
    ```
 
    Edit `workspace/.pi/agent/SYSTEM.md` to taste — pi reads it from

@@ -12,8 +12,8 @@ const PROVIDERS = {
   anthropic: {
     host: "api.anthropic.com",
     envVar: "REAL_ANTHROPIC_API_KEY",
-    header: "authorization",
-    prefix: "Bearer ",
+    header: "x-api-key",
+    prefix: "",
   },
   xai: {
     host: "api.x.ai",
@@ -59,12 +59,23 @@ function proxyToProvider(providerName, req, res, body) {
   delete headers["content-length"];
   delete headers["proxy-authorization"];
   delete headers["authorization"];
+  delete headers["x-api-key"];
   headers.host = provider.host;
   headers[provider.header] = `${provider.prefix}${realKey}`;
+
+  if (process.env.PROXY_DEBUG) {
+    const redactedHeaders = { ...headers, [provider.header]: "<redacted>" };
+    console.log(`--> ${req.method} https://${provider.host}${path}`);
+    console.log(JSON.stringify(redactedHeaders, null, 2));
+    if (body.length) console.log(body.toString("utf8").slice(0, 2000));
+  }
 
   const upstreamReq = https.request(
     { host: provider.host, path, method: req.method, headers },
     (upstreamRes) => {
+      if (process.env.PROXY_DEBUG) {
+        console.log(`<-- ${upstreamRes.statusCode} ${req.method} ${path}`);
+      }
       res.writeHead(upstreamRes.statusCode, upstreamRes.headers);
       upstreamRes.pipe(res);
     }
